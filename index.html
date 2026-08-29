@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#3d0619">
+<meta name="color-scheme" content="light">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Confess.">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%233d0619'/%3E%3Ctext x='50' y='68' font-size='58' text-anchor='middle' fill='%23ff4d7a'%3E%E2%99%A5%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%233d0619'/%3E%3Ctext x='50' y='68' font-size='58' text-anchor='middle' fill='%23ff4d7a'%3E%E2%99%A5%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Confess.%22%2C%22short_name%22%3A%22Confess.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%233d0619%22%2C%22theme_color%22%3A%22%233d0619%22%7D">
+<title>Confess. — Make your crush your gf.</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Poppins:wght@400;500;600;700&display=swap');
+
+  :root {
+    --burgundy: #3d0619;
+    --crimson: #a3102f;
+    --red: #d81159;
+    --pink: #ff4d7a;
+    --blush: #fff0f3;
+    --gold: #ffd166;
+    --ink: #3a0a1c;
+    --ink-soft: #8a5a68;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* FIX: html previously had no background, so when the mobile keyboard
+     opens/closes or the browser chrome resizes, the fixed body can briefly
+     reveal the html element underneath — which defaulted to white.
+     Giving html the same dark background eliminates that white flash. */
+  html {
+    height: 100%;
+    background: var(--burgundy);
+    /* FIX: page uses a light-themed card/inputs/button on a dark backdrop.
+       Declaring color-scheme in CSS (more authoritative than the meta tag
+       for Android/Chrome's forced-dark heuristics) stops the browser from
+       auto-inverting the inputs, button, and card text to dark colors. */
+    color-scheme: light;
+  }
+  body { height: 100%; overscroll-behavior: none; }
+
+  body {
+    background: radial-gradient(circle at 30% 20%, var(--crimson) 0%, var(--burgundy) 60%, #21030f 100%);
+    color: var(--ink);
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+  }
+
+  .page {
+    position: relative;
+    height: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));
+    overflow: hidden;
+  }
+
+  /* floating hearts + petals */
+  .float-field { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .drift {
+    position: absolute;
+    bottom: -40px;
+    opacity: 0;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) translateX(0) rotate(0deg) scale(0.7); opacity: 0; }
+    10% { opacity: 0.85; }
+    50% { transform: translateY(-50vh) translateX(18px) rotate(20deg) scale(1); }
+    90% { opacity: 0.5; }
+    100% { transform: translateY(-105vh) translateX(-14px) rotate(-15deg) scale(0.85); opacity: 0; }
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.5;
+    z-index: 0;
+    animation: drift 14s ease-in-out infinite;
+  }
+  .orb1 { width: 360px; height: 360px; background: var(--pink); top: -140px; left: -100px; }
+  .orb2 { width: 320px; height: 320px; background: var(--gold); bottom: -150px; right: -100px; animation-delay: -6s; opacity: 0.25; }
+  @keyframes drift {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(24px, -16px) scale(1.06); }
+  }
+
+  .ribbon {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 980px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,214,102,0.4);
+    color: var(--gold);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: rise 0.7s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+
+  h1.hero-title {
+    position: relative;
+    z-index: 2;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: clamp(26px, 5vw, 42px);
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 8px;
+    opacity: 0;
+    transform: translateY(14px);
+    animation: rise 0.8s cubic-bezier(.2,.8,.2,1) 0.08s forwards;
+  }
+
+  h1.hero-title .grad {
+    background: linear-gradient(100deg, var(--gold), var(--pink) 65%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero-sub {
+    position: relative;
+    z-index: 2;
+    font-size: clamp(13px, 1.6vw, 15px);
+    color: rgba(255,255,255,0.72);
+    max-width: 42ch;
+    line-height: 1.5;
+    margin-bottom: 18px;
+    opacity: 0;
+    transform: translateY(14px);
+    animation: rise 0.8s cubic-bezier(.2,.8,.2,1) 0.14s forwards;
+  }
+
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+  /* card */
+  .card {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 400px;
+    background: var(--blush);
+    border-radius: 24px;
+    padding: 26px 26px 20px;
+    box-shadow: 0 30px 70px -25px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
+    opacity: 0;
+    transform: translateY(16px);
+    animation: rise 0.8s cubic-bezier(.2,.8,.2,1) 0.2s forwards;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    width: 46px; height: 20px;
+    background: var(--red);
+    clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%);
+  }
+
+  .heartbeat {
+    font-size: 28px;
+    color: var(--red);
+    display: block;
+    margin-bottom: 4px;
+    animation: beat 1.4s ease-in-out infinite;
+    filter: drop-shadow(0 2px 6px rgba(216,17,89,0.35));
+  }
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.22); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.15); }
+    60% { transform: scale(1); }
+  }
+
+  .card h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .card .sub {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    max-width: 32ch;
+    margin: 0 auto 16px;
+  }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 6px;
+    margin-top: 12px;
+  }
+  label:first-of-type { margin-top: 0; }
+
+  .field { position: relative; }
+  .field .at {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-soft);
+    font-size: 14px;
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px 14px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    color: var(--ink);
+    background: #fff;
+    border: 1.5px solid #f3d0da;
+    border-radius: 12px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    color-scheme: light;
+  }
+  input#instagramId { padding-left: 28px; }
+  input::placeholder { color: #d0a9b3; }
+  input:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 4px rgba(216,17,89,0.14);
+  }
+
+  .btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 15px;
+    min-height: 48px;
+    background: linear-gradient(100deg, var(--crimson), var(--red) 55%, var(--pink));
+    background-size: 200% 100%;
+    background-position: 0% 0%;
+    color: #fff;
+    border: none;
+    border-radius: 980px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-position 0.5s ease, transform 0.2s cubic-bezier(.2,.8,.2,1), box-shadow 0.3s ease;
+    box-shadow: 0 12px 26px -12px rgba(216,17,89,0.6);
+    color-scheme: light;
+  }
+  .btn:hover:not(:disabled) { background-position: 100% 0%; transform: translateY(-2px); }
+  .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .status {
+    margin-top: 10px;
+    font-size: 11.5px;
+    text-align: center;
+    min-height: 14px;
+    color: var(--ink-soft);
+  }
+  .status.error { color: var(--red); }
+
+  .fine-print {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    opacity: 0.75;
+  }
+
+  /* flying courier */
+  .bird-courier {
+    position: fixed;
+    left: 50%;
+    top: 62%;
+    font-size: 28px;
+    line-height: 1;
+    z-index: 90;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+  }
+  .bird-courier .letter {
+    position: absolute;
+    top: 20px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 15px;
+    animation: dangle 0.5s ease-in-out infinite alternate;
+  }
+  @keyframes dangle {
+    0% { transform: translateX(-50%) rotate(-6deg); }
+    100% { transform: translateX(-50%) rotate(6deg); }
+  }
+  .bird-courier .wings { display: inline-block; animation: flap 0.28s ease-in-out infinite; }
+  @keyframes flap { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.72); } }
+  .bird-courier.launch { animation: birdFly 1.7s cubic-bezier(.4,.1,.4,1) forwards; }
+  @keyframes birdFly {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.6) rotate(0deg); }
+    8%   { opacity: 1; transform: translate(-50%, -55%) scale(0.9) rotate(-4deg); }
+    35%  { transform: translate(10vw, -85vh) scale(1) rotate(8deg); }
+    70%  { transform: translate(65vw, -140vh) scale(0.85) rotate(14deg); opacity: 1; }
+    100% { transform: translate(130vw, -190vh) scale(0.5) rotate(18deg); opacity: 0; }
+  }
+
+  /* cinematic reveal */
+  .reveal-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 35%, #5c0a2c 0%, #26030f 65%);
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1.03);
+    transition: opacity 1s cubic-bezier(.2,.8,.2,1), transform 1s cubic-bezier(.2,.8,.2,1);
+    text-align: center;
+    padding: 40px 24px;
+    overflow: hidden;
+  }
+  .reveal-screen.show { opacity: 1; visibility: visible; transform: scale(1); }
+  .reveal-screen .orb { opacity: 0.3; }
+
+  .reveal-inner { position: relative; z-index: 2; max-width: 480px; }
+
+  .reveal-eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255,214,102,0.85);
+    margin-bottom: 18px;
+  }
+
+  .reveal-glow-heart {
+    font-size: 40px;
+    color: var(--red);
+    margin-bottom: 12px;
+    display: inline-block;
+    animation: beat 1.4s ease-in-out infinite, glow 2.4s ease-in-out infinite;
+  }
+  @keyframes glow {
+    0%, 100% { filter: drop-shadow(0 0 8px rgba(216,17,89,0.6)); }
+    50% { filter: drop-shadow(0 0 22px rgba(255,77,122,0.95)); }
+  }
+
+  .reveal-handle {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-style: italic;
+    letter-spacing: -0.01em;
+    font-size: clamp(28px, 7.5vw, 50px);
+    line-height: 1.05;
+    margin-bottom: 14px;
+    background: linear-gradient(100deg, #fff, var(--gold) 55%, var(--pink));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    word-break: break-word;
+  }
+
+  .reveal-line {
+    font-weight: 500;
+    font-size: clamp(16px, 3.4vw, 20px);
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 22px;
+    line-height: 1.4;
+  }
+
+  .reveal-note {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    max-width: 34ch;
+    margin: 0 auto 26px;
+    line-height: 1.7;
+  }
+
+  .reveal-btn {
+    padding: 14px 28px;
+    min-height: 46px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,214,102,0.3);
+    color: #fff;
+    border-radius: 980px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+  }
+  .reveal-btn:hover {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,214,102,0.55);
+    transform: translateY(-2px);
+  }
+
+  @media (max-height: 680px) {
+    .hero-title { margin-bottom: 6px; }
+    .hero-sub { margin-bottom: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="float-field" id="floatField"></div>
+
+<div class="page">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <div class="ribbon">💌 A little secret, sealed with love</div>
+  <h1 class="hero-title">Turn a crush<br><span class="grad">into something more.</span></h1>
+  <p class="hero-sub">Fill up the form below and make your crush your gf 💘</p>
+
+  <div class="card" id="cardContent">
+    <span class="heartbeat">♥</span>
+    <h2>Make It Official.</h2>
+    <p class="sub">Your name and their Instagram handle. Kept private, always.</p>
+
+    <form id="crushForm">
+      <label for="fullName">Your full name</label>
+      <input type="text" id="fullName" name="fullName" placeholder="e.g. Priya Sharma" required autocomplete="off">
+
+      <label for="instagramId">Their Instagram handle</label>
+      <div class="field">
+        <span class="at">@</span>
+        <input type="text" id="instagramId" name="instagramId" placeholder="username" required autocomplete="off">
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">Send With Love 💘</button>
+      <div class="status" id="statusMsg"></div>
+    </form>
+
+    <div class="fine-print">your entry stays private, always</div>
+  </div>
+</div>
+
+<!-- flying courier -->
+<div class="bird-courier" id="birdCourier">
+  <span class="wings">🕊️</span>
+  <span class="letter">💌</span>
+</div>
+
+<!-- cinematic reveal -->
+<div class="reveal-screen" id="revealScreen">
+  <div class="orb orb1" style="top:-100px; left:-60px;"></div>
+  <div class="orb orb2" style="bottom:-120px; right:-80px;"></div>
+  <div class="reveal-inner">
+    <div class="reveal-eyebrow">message delivered, safely</div>
+    <span class="reveal-glow-heart">♥</span>
+    <div class="reveal-handle" id="revealHandle">@username</div>
+    <div class="reveal-line" id="revealLine">could be more than a crush soon...</div>
+    <p class="reveal-note">Your secret has flown off. What happens next is up to fate — and maybe a little courage.</p>
+    <button class="reveal-btn" id="resetBtn">Send Another</button>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('crushForm');
+  const statusMsg = document.getElementById('statusMsg');
+  const submitBtn = document.getElementById('submitBtn');
+  const cardContent = document.getElementById('cardContent');
+  const birdCourier = document.getElementById('birdCourier');
+  const revealScreen = document.getElementById('revealScreen');
+  const revealHandle = document.getElementById('revealHandle');
+  const revealLine = document.getElementById('revealLine');
+  const resetBtn = document.getElementById('resetBtn');
+
+  // ---- CONFIGURE THIS ----
+  // Paste your Google Apps Script Web App URL here (ends in /exec)
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5Klr8sTrRc7WoLn2S_BCzRTuDuZUnJZvq0SzPw6ErspEboV5tcKE693gY0lhWVudUaA/exec";
+  // -------------------------
+
+  // gentle floating hearts/petals in the background
+  (function buildField() {
+    const field = document.getElementById('floatField');
+    const glyphs = ['♥', '🌹', '💗'];
+    const count = 14;
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('span');
+      el.className = 'drift';
+      el.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.fontSize = (12 + Math.random() * 14) + 'px';
+      el.style.animationDuration = (10 + Math.random() * 10) + 's';
+      el.style.animationDelay = (Math.random() * 12) + 's';
+      field.appendChild(el);
+    }
+  })();
+
+  const romanticLines = [
+    "could be more than a crush soon...",
+    "your person, in the making 💘",
+    "soon, maybe not just a crush anymore",
+    "fingers crossed for a happy ending",
+    "the universe has been notified 💫"
+  ];
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const fullName = document.getElementById('fullName').value.trim();
+    const instagramIdRaw = document.getElementById('instagramId').value.trim();
+    const instagramId = instagramIdRaw.replace(/^@/, '');
+
+    if (!fullName || !instagramId) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending...";
+    statusMsg.textContent = "";
+    statusMsg.className = "status";
+
+    if (!SCRIPT_URL.includes("PASTE_YOUR")) {
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ fullName, instagramId })
+      }).catch(() => {});
+    } else {
+      console.warn("SCRIPT_URL not set — entry was not saved to Google Sheets, animation preview only.");
+    }
+
+    const btnRect = submitBtn.getBoundingClientRect();
+    birdCourier.style.left = (btnRect.left + btnRect.width / 2) + 'px';
+    birdCourier.style.top = (btnRect.top + btnRect.height / 2) + 'px';
+    birdCourier.style.transform = 'translate(-50%, -50%)';
+
+    requestAnimationFrame(() => birdCourier.classList.add('launch'));
+
+    setTimeout(() => {
+      cardContent.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      cardContent.style.opacity = '0';
+      cardContent.style.transform = 'translateY(-30px) scale(0.96)';
+    }, 250);
+
+    setTimeout(() => {
+      revealHandle.textContent = '@' + instagramId;
+      revealLine.textContent = romanticLines[Math.floor(Math.random() * romanticLines.length)];
+      revealScreen.classList.add('show');
+    }, 1500);
+  });
+
+  resetBtn.addEventListener('click', function () {
+    revealScreen.classList.remove('show');
+    birdCourier.classList.remove('launch');
+    setTimeout(() => {
+      cardContent.style.opacity = '1';
+      cardContent.style.transform = 'translateY(0) scale(1)';
+      form.reset();
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Send With Love 💘";
+      statusMsg.textContent = '';
+    }, 500);
+  });
+</script>
+</body>
+</html>
