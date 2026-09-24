@@ -259,7 +259,10 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     color-scheme: light;
   }
-  input#instagramId { padding-left: 28px; }
+  input#fullName,
+input#instagramId {
+  padding-left: 28px;
+}
   input::placeholder { color: #d0a9b3; }
   input:focus {
     border-color: var(--red);
@@ -463,6 +466,7 @@
         <span class="at">@</span>
       <input type="text" id="fullName" name="fullName" placeholder="e.g. rupa_sen2003" required autocomplete="off">
       </div>
+      
       <label for="instagramId">Your crush instra id</label>
       <div class="field">
         <span class="at">@</span>
